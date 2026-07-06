@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AuraMarket | Premium B2C E-Commerce{% endblock %}</title>
+    
+    <!-- Tailwind CSS via CDN for direct cPanel deployment without Node build -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Custom 3D & Design CSS -->
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+</head>
+<body class="bg-gray-50/50 min-h-screen flex flex-col font-sans antialiased text-gray-900">
+
+    <!-- Header Navigation -->
+    {% include 'shop/components/header.html' %}
+
+    <!-- Main Dynamic Content -->
+    <main class="flex-1">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Slide-over Checkout Cart Drawer -->
+    {% include 'shop/components/cart_drawer.html' %}
+
+    <!-- Footer -->
+    <footer class="bg-black text-gray-400 py-12 px-6 border-t border-gray-800 mt-16 font-mono text-xs">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="space-y-1">
+                <div class="flex items-center space-x-2 text-white font-bold text-base">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+                    <span>AuraMarket</span>
+                </div>
+                <p class="text-gray-500">Sleek Slate & Minimal Gold Python/Django cPanel Architecture</p>
+            </div>
+            <div class="flex space-x-6 text-gray-400">
+                <a href="{% url 'catalog' %}" class="hover:text-amber-400 transition-colors">Catalog</a>
+                <a href="{% url 'track' %}" class="hover:text-amber-400 transition-colors">Track Order</a>
+                <a href="{% url 'seller' %}" class="hover:text-amber-400 transition-colors">Seller Portal</a>
+                <a href="/admin/" class="hover:text-amber-400 transition-colors">Django Admin</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Client JavaScript -->
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

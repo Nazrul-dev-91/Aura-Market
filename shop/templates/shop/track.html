@@ -1,0 +1,165 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}AuraMarket | Track Order{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8 font-sans space-y-8">
+    
+    <!-- Search Card -->
+    <div class="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-xs">
+        <h2 class="text-2xl font-extrabold text-gray-950 tracking-tight mb-2">Real-Time Order Tracking</h2>
+        <p class="text-gray-500 text-sm mb-6">
+            Enter your unique <span class="font-mono text-amber-700 font-bold">ORD-</span> tracking code to view live order progression.
+        </p>
+
+        <form method="GET" action="{% url 'track' %}" class="flex flex-col sm:flex-row gap-3">
+            {% if language %}
+                <input type="hidden" name="lang" value="{{ language }}">
+            {% endif %}
+            <div class="relative flex-1">
+                <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                <input type="text" name="tracking_number" value="{{ tracking_number }}" placeholder="e.g. ORD-1700000000-ABCDE"
+                       class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-12 pr-4 py-3 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-black font-mono tracking-wider">
+            </div>
+            <button type="submit" class="bg-black hover:bg-amber-700 text-white font-bold px-6 py-3 rounded-xl text-sm transition-all flex items-center justify-center space-x-2 cursor-pointer">
+                <span>Track Details</span>
+            </button>
+        </form>
+
+        {% if error %}
+            <div class="mt-4 bg-red-50 text-red-700 text-xs p-3.5 rounded-xl border border-red-100 font-medium">
+                {{ error }}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Active Order Result -->
+    {% if order %}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- Timeline Column -->
+            <div class="md:col-span-2 bg-white rounded-3xl border border-gray-100 p-6 md:p-8 space-y-6">
+                <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+                    <div>
+                        <span class="text-[10px] text-gray-400 font-mono uppercase tracking-wider block">Currently Tracking</span>
+                        <span class="text-base font-bold text-gray-950 font-mono">{{ order.tracking_number }}</span>
+                    </div>
+                    <span class="bg-amber-100 text-amber-800 text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-full">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+
+                <!-- Timeline Progress Steps -->
+                <div class="relative pl-8 space-y-8">
+                    <!-- Vertical Connector Line -->
+                    <div class="absolute left-[15px] top-3 bottom-3 w-0.5 bg-gray-100"></div>
+
+                    <!-- Step 1: Order Placed -->
+                    <div class="relative flex items-start space-x-4">
+                        <div class="absolute -left-[31px] w-8 h-8 rounded-full flex items-center justify-center border-4 bg-emerald-600 border-emerald-50 text-white">
+                            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-900">Order Placed</h4>
+                            <p class="text-gray-500 text-xs mt-0.5 leading-relaxed">Order details received and verified</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Processing -->
+                    <div class="relative flex items-start space-x-4">
+                        <div class="absolute -left-[31px] w-8 h-8 rounded-full flex items-center justify-center border-4 {% if order.status == 'processing' or order.status == 'shipped' or order.status == 'delivered' %}bg-emerald-600 border-emerald-50 text-white{% else %}bg-white border-gray-100 text-gray-300{% endif %}">
+                            <i data-lucide="package" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold {% if order.status == 'processing' or order.status == 'shipped' or order.status == 'delivered' %}text-gray-900{% else %}text-gray-400{% endif %}">
+                                Processing & Packaging
+                            </h4>
+                            <p class="text-gray-500 text-xs mt-0.5 leading-relaxed">Inventory locked and being prepared</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Shipped -->
+                    <div class="relative flex items-start space-x-4">
+                        <div class="absolute -left-[31px] w-8 h-8 rounded-full flex items-center justify-center border-4 {% if order.status == 'shipped' or order.status == 'delivered' %}bg-emerald-600 border-emerald-50 text-white{% else %}bg-white border-gray-100 text-gray-300{% endif %}">
+                            <i data-lucide="truck" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold {% if order.status == 'shipped' or order.status == 'delivered' %}text-gray-900{% else %}text-gray-400{% endif %}">
+                                Shipped & In Transit
+                            </h4>
+                            <p class="text-gray-500 text-xs mt-0.5 leading-relaxed">Dispatched from warehouse</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Delivered -->
+                    <div class="relative flex items-start space-x-4">
+                        <div class="absolute -left-[31px] w-8 h-8 rounded-full flex items-center justify-center border-4 {% if order.status == 'delivered' %}bg-emerald-600 border-emerald-50 text-white{% else %}bg-white border-gray-100 text-gray-300{% endif %}">
+                            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold {% if order.status == 'delivered' %}text-gray-900{% else %}text-gray-400{% endif %}">
+                                Delivered
+                            </h4>
+                            <p class="text-gray-500 text-xs mt-0.5 leading-relaxed">Arrived at shipping address</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Details Sidebar -->
+            <div class="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 space-y-6">
+                <h3 class="font-extrabold text-gray-950 text-sm tracking-tight border-b border-gray-100 pb-3">Order Summary</h3>
+                
+                <div class="space-y-3.5 text-xs">
+                    <div>
+                        <span class="text-gray-400 block font-mono uppercase text-[10px]">Recipient</span>
+                        <span class="font-semibold text-gray-900 block">{{ order.guest_name }}</span>
+                        <span class="text-gray-500 font-mono block text-[11px]">{{ order.guest_email }}</span>
+                    </div>
+                    
+                    <div>
+                        <span class="text-gray-400 block font-mono uppercase text-[10px]">Shipping Address</span>
+                        <span class="font-semibold text-gray-900 block leading-relaxed">{{ order.shipping_address }}</span>
+                    </div>
+
+                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
+                        <div>
+                            <span class="text-gray-500 block font-mono uppercase text-[9px]">Payment Status</span>
+                            <span class="text-emerald-700 font-bold uppercase tracking-wide">
+                                {{ order.get_payment_status_display }}
+                            </span>
+                        </div>
+                        <i data-lucide="shield-check" class="w-5 h-5 text-emerald-600"></i>
+                    </div>
+                </div>
+
+                <!-- Items list -->
+                <div class="border-t border-gray-100 pt-4 space-y-3">
+                    <h4 class="font-mono text-[10px] font-bold text-gray-400 uppercase tracking-wider">Purchased Items</h4>
+                    <div class="space-y-3 max-h-48 overflow-y-auto">
+                        {% for item in order.items.all %}
+                            <div class="flex justify-between items-center text-xs space-x-2">
+                                <span class="text-gray-500 truncate max-w-[120px]">
+                                    {{ item.product.name }} <span class="font-bold text-gray-900">x{{ item.quantity }}</span>
+                                </span>
+                                <span class="font-semibold text-gray-900 font-mono">
+                                    ৳{{ item.item_total }}
+                                </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="border-t border-dashed border-gray-200 pt-3 flex justify-between items-center text-xs font-bold text-gray-900">
+                        <span>Total Amount Charged:</span>
+                        <span class="text-sm font-extrabold text-amber-700">
+                            ৳{{ order.total_amount }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

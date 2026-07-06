@@ -1,0 +1,165 @@
+<!-- Slide-over Checkout Cart Drawer -->
+<div id="cart-drawer" class="fixed inset-0 z-50 overflow-hidden font-sans hidden">
+    <!-- Backdrop -->
+    <div onclick="closeCartDrawer()" class="absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity"></div>
+
+    <div class="absolute inset-y-0 right-0 max-w-full flex pl-10">
+        <div class="w-screen max-w-lg bg-white shadow-2xl flex flex-col justify-between">
+            
+            <!-- Drawer Header -->
+            <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="shopping-bag" class="w-5 h-5 text-gray-900"></i>
+                    <h2 class="text-lg font-bold text-gray-900">
+                        {% if language == 'bn' %}আপনার শপিং ব্যাগ{% else %}Your Checkout Basket{% endif %}
+                    </h2>
+                </div>
+                <button onclick="closeCartDrawer()" class="p-1 rounded-full text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Drawer Body - Scrollable -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
+                
+                <!-- Dynamic Cart Items Container -->
+                <div id="cart-items-container"></div>
+
+                <!-- Secure Guest Checkout Form -->
+                <form id="checkout-form" onsubmit="handleCheckoutFormSubmit(event)" class="pt-6 border-t border-gray-100 space-y-4">
+                    <div class="flex items-center space-x-1.5 text-xs font-mono font-bold tracking-wider text-gray-400 uppercase">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+                        <span>{% if language == 'bn' %}নিরাপদ গেস্ট চেকআউট{% else %}Secure Guest Checkout{% endif %}</span>
+                    </div>
+
+                    <div id="checkout-error-msg" class="bg-red-50 text-red-700 text-xs p-3 rounded-xl border border-red-100 font-medium hidden"></div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[11px] font-mono font-semibold uppercase tracking-wider text-gray-500 block mb-1">
+                                {% if language == 'bn' %}পূর্ণ নাম *{% else %}Full Name *{% endif %}
+                            </label>
+                            <input type="text" id="guest_name" required placeholder="{% if language == 'bn' %}যেমন: হাসিব রহমান{% else %}e.g. Hasib Rahman{% endif %}"
+                                   class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2 text-sm text-gray-950 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-mono font-semibold uppercase tracking-wider text-gray-500 block mb-1">
+                                {% if language == 'bn' %}মোবাইল নম্বর *{% else %}Mobile Number *{% endif %}
+                            </label>
+                            <input type="tel" id="phone_number" required placeholder="017XXXXXXXX"
+                                   class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2 text-sm text-gray-950 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black font-mono">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[11px] font-mono font-semibold uppercase tracking-wider text-gray-500 block mb-1">
+                            {% if language == 'bn' %}ইমেইল ঠিকানা *{% else %}Email Address *{% endif %}
+                        </label>
+                        <input type="email" id="guest_email" required placeholder="hasib@example.com"
+                               class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2 text-sm text-gray-950 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black">
+                    </div>
+
+                    <div>
+                        <label class="text-[11px] font-mono font-semibold uppercase tracking-wider text-gray-500 block mb-1">
+                            {% if language == 'bn' %}ডেলিভারির ঠিকানা *{% else %}Shipping Address *{% endif %}
+                        </label>
+                        <textarea id="shipping_address" required rows="2" placeholder="{% if language == 'bn' %}যেমন: বাড়ি ১২, রোড ৪, ধানমন্ডি, ঢাকা{% else %}e.g. House 12, Road 4, Dhanmondi, Dhaka{% endif %}"
+                                  class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2 text-sm text-gray-950 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black"></textarea>
+                    </div>
+
+                    <!-- Payment Method Selectors -->
+                    <div class="space-y-3 pt-2">
+                        <label class="text-[11px] font-mono font-semibold uppercase tracking-wider text-gray-500 block">
+                            {% if language == 'bn' %}পেমেন্ট পদ্ধতি নির্বাচন করুন *{% else %}Payment Method *{% endif %}
+                        </label>
+                        
+                        <div class="grid grid-cols-3 gap-2">
+                            <button type="button" id="payment-btn-cod" onclick="selectPaymentMethod('cod')"
+                                    class="payment-method-btn py-2.5 px-2 rounded-xl border text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 bg-black text-white border-black shadow-xs">
+                                <span class="text-[10px] uppercase font-mono">CoD</span>
+                                <span class="text-[9px] block text-center truncate">{% if language == 'bn' %}ক্যাশ অন ডেলিভারি{% else %}Cash on Delivery{% endif %}</span>
+                            </button>
+
+                            <button type="button" id="payment-btn-bkash" onclick="selectPaymentMethod('bkash')"
+                                    class="payment-method-btn py-2.5 px-2 rounded-xl border text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100">
+                                <span class="text-[10px] font-bold font-mono">bKash</span>
+                                <span class="text-[9px] block text-center truncate">{% if language == 'bn' %}বিকাশ পেমেন্ট{% else %}bKash Wallet{% endif %}</span>
+                            </button>
+
+                            <button type="button" id="payment-btn-nagad" onclick="selectPaymentMethod('nagad')"
+                                    class="payment-method-btn py-2.5 px-2 rounded-xl border text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100">
+                                <span class="text-[10px] font-bold font-mono">Nagad</span>
+                                <span class="text-[9px] block text-center truncate">{% if language == 'bn' %}নগদ পেমেন্ট{% else %}Nagad Wallet{% endif %}</span>
+                            </button>
+                        </div>
+
+                        <!-- Instructions for bKash or Nagad -->
+                        <div id="payment-instructions-mobile" class="p-4 bg-gray-50 border border-gray-100 rounded-xl space-y-3 hidden animate-fadeIn">
+                            <div class="text-xs text-gray-600 space-y-1">
+                                <p class="font-bold text-gray-800">
+                                    {% if language == 'bn' %}পেমেন্ট নির্দেশনাবলী:{% else %}Payment Instructions:{% endif %}
+                                </p>
+                                <p class="text-[11px] leading-relaxed">
+                                    {% if language == 'bn' %}
+                                        আমাদের মার্চেন্ট নম্বর ০১৭৯৯-৮৮৮৭৭৭ এ সেন্ড মানি অথবা পেমেন্ট করুন। তারপর নিচের ফিল্ডে আপনার সেন্ডার নম্বর ও ট্রানজেকশন আইডি (TrxID) লিখুন।
+                                    {% else %}
+                                        Send money/payment of the total amount to our merchant number: 01799-888777. Then enter your sender number and Transaction ID (TrxID) below.
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-[10px] font-mono text-gray-500 uppercase block mb-1">Sender Number *</label>
+                                    <input type="text" id="sender_number" placeholder="01XXXXXXXXX"
+                                           class="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs font-mono text-gray-950 focus:outline-none focus:ring-1 focus:ring-black">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-mono text-gray-500 uppercase block mb-1">Transaction ID (TrxID) *</label>
+                                    <input type="text" id="transaction_id" placeholder="e.g. 9B8C7D6A"
+                                           class="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs font-mono text-gray-950 focus:outline-none focus:ring-1 focus:ring-black">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Instruction for CoD -->
+                        <div id="payment-instructions-cod" class="p-3 bg-emerald-50 border border-emerald-100 text-emerald-800 rounded-xl text-xs leading-relaxed">
+                            {% if language == 'bn' %}
+                                ক্যাশ অন ডেলিভারি: অর্ডার পৌঁছানোর পর ডেলিভারিম্যানকে পণ্য বুঝে নিয়ে মূল্য পরিশোধ করুন।
+                            {% else %}
+                                Cash on Delivery: Pay the delivery agent in cash upon receiving your order at your shipping address.
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Drawer Footer -->
+            <div class="px-6 py-5 border-t border-gray-100 bg-gray-50/50 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-gray-500 block">
+                            {% if language == 'bn' %}মোট পরিশোধযোগ্য মূল্য:{% else %}Total amount to authorize:{% endif %}
+                        </span>
+                        <span id="cart-total-display" class="text-xl font-extrabold text-gray-900 font-sans">৳0</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] font-mono text-gray-400 block">Django Atomic Transaction</span>
+                        <span class="text-[10px] font-mono text-emerald-600 block font-bold">
+                            {% if language == 'bn' %}রিয়েল-টাইম স্টক লক{% else %}Real-time Stock Lock{% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <button type="submit" form="checkout-form" id="cart-checkout-submit-btn"
+                        class="w-full bg-black text-white hover:bg-amber-700 font-bold py-3 px-4 rounded-xl transition-all shadow-xs flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i data-lucide="shield-check" class="w-5 h-5 text-amber-300"></i>
+                    <span>
+                        {% if language == 'bn' %}অর্ডার নিশ্চিত করুন{% else %}Confirm & Place Order{% endif %}
+                    </span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,64 @@
+<header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 py-4">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+        
+        <!-- Brand Logo -->
+        <a href="{% url 'catalog' %}" class="flex items-center space-x-2 group">
+            <div class="bg-black text-white p-2 rounded-xl transition-all group-hover:scale-105">
+                <i data-lucide="sparkles" class="w-5 h-5 text-amber-300"></i>
+            </div>
+            <div>
+                <span class="font-sans font-extrabold text-xl tracking-tight text-gray-900 block leading-none">
+                    AuraMarket
+                </span>
+                <span class="font-mono text-[10px] text-amber-600 font-semibold tracking-widest uppercase">
+                    {% if language == 'bn' %}প্রিমিয়াম B2C{% else %}Premium B2C{% endif %}
+                </span>
+            </div>
+        </a>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex space-x-1 bg-gray-100 p-1 rounded-xl">
+            <a href="{% url 'catalog' %}{% if language %}?lang={{ language }}{% endif %}"
+               class="px-4 py-2 text-sm font-medium rounded-lg transition-all {% if request.resolver_match.url_name == 'catalog' %}bg-white text-gray-900 shadow-xs{% else %}text-gray-500 hover:text-gray-900{% endif %}">
+               {% if language == 'bn' %}ক্যাটালগ দেখুন{% else %}Explore Catalog{% endif %}
+            </a>
+            
+            <a href="{% url 'track' %}{% if language %}?lang={{ language }}{% endif %}"
+               class="px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center space-x-1 {% if request.resolver_match.url_name == 'track' %}bg-white text-gray-900 shadow-xs{% else %}text-gray-500 hover:text-gray-900{% endif %}">
+                <i data-lucide="package" class="w-4 h-4"></i>
+                <span>{% if language == 'bn' %}অর্ডার ট্র্যাক করুন{% else %}Track Order{% endif %}</span>
+            </a>
+
+            <a href="{% url 'seller' %}{% if language %}?lang={{ language }}{% endif %}"
+               class="px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center space-x-1 {% if request.resolver_match.url_name == 'seller' %}bg-white text-gray-900 shadow-xs{% else %}text-gray-500 hover:text-gray-900{% endif %}">
+                <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                <span>{% if language == 'bn' %}বিক্রেতা পোর্টাল{% else %}Seller Portal{% endif %}</span>
+            </a>
+        </nav>
+
+        <!-- Actions (Language Switcher + Cart Button) -->
+        <div class="flex items-center space-x-3">
+            
+            <!-- Language Switcher -->
+            <div class="flex bg-gray-100 p-0.5 rounded-lg border border-gray-200">
+                <a href="?lang=en" 
+                   class="px-2 py-1 text-xs font-bold rounded-md transition-all {% if language == 'en' or not language %}bg-black text-white shadow-xs{% else %}text-gray-500 hover:text-gray-900{% endif %}">
+                    EN
+                </a>
+                <a href="?lang=bn" 
+                   class="px-2 py-1 text-xs font-bold rounded-md transition-all {% if language == 'bn' %}bg-black text-white shadow-xs{% else %}text-gray-500 hover:text-gray-900{% endif %}">
+                    বাং
+                </a>
+            </div>
+
+            <!-- Cart Trigger Button -->
+            <button onclick="openCartDrawer()" class="relative p-2.5 bg-gray-50 hover:bg-gray-100 rounded-full text-gray-700 transition-all cursor-pointer">
+                <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                <span id="cart-count-badge" class="absolute -top-1 -right-1 bg-amber-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center hidden">
+                    0
+                </span>
+            </button>
+        </div>
+
+    </div>
+</header>

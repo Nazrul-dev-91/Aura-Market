@@ -1,0 +1,154 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}AuraMarket | E-Commerce Catalog{% endblock %}
+
+{% block content %}
+<div class="space-y-12 pb-16">
+    
+    <!-- Hero Banner Area -->
+    <div class="bg-black text-white relative overflow-hidden py-16 px-6 md:px-12 text-center">
+        <!-- Radial glow effect -->
+        <div class="absolute inset-0 bg-radial-[circle_at_50%_50%] from-amber-700/15 via-transparent to-transparent pointer-events-none"></div>
+        
+        <div class="max-w-3xl mx-auto space-y-6">
+            <div class="inline-flex items-center space-x-2 bg-amber-500/10 border border-amber-500/20 px-3.5 py-1.5 rounded-full text-amber-400 font-mono text-[10px] font-extrabold uppercase tracking-widest leading-none">
+                <i data-lucide="flame" class="w-4 h-4 animate-pulse"></i>
+                <span>
+                    {% if language == 'bn' %}চলমান আকর্ষণীয় অফারসমূহ অনলাইন{% else %}Active Peak sales events online{% endif %}
+                </span>
+            </div>
+            
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight font-sans leading-tight">
+                {% if language == 'bn' %}
+                    সেরা কালেকশন। লক। <br />
+                    <span class="text-amber-500">তাত্ক্ষণিক ডেলিভারি।</span>
+                {% else %}
+                    Curation. Lock. <br />
+                    <span class="text-amber-500">Instant Fulfillment.</span>
+                {% endif %}
+            </h1>
+
+            <p class="text-gray-400 text-sm max-w-lg mx-auto leading-relaxed">
+                {% if language == 'bn' %}
+                    <strong class="text-white">AuraMarket</strong>-এ আপনাকে স্বাগতম! এটি একটি আধুনিক নির্ভরযোগ্য B2C ই-কমার্স প্ল্যাটফর্ম। দ্রুত ও অত্যন্ত সুরক্ষিতভাবে কোনো অ্যাকাউন্ট তৈরি করা ছাড়াই সরাসরি অর্ডার করুন।
+                {% else %}
+                    Welcome to <strong class="text-white">AuraMarket</strong>, built with Python & Django. Features atomic row-level inventory locks, instant bKash/Nagad/CoD checkout, and real-time tracking!
+                {% endif %}
+            </p>
+
+            <div class="flex flex-wrap gap-4 text-xs font-mono text-gray-400 justify-center">
+                <span class="flex items-center space-x-1">
+                    <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>
+                    <span>{% if language == 'bn' %}ইন-মেমোরি ফাস্ট রেসপন্স{% else %}Fast Django ORM{% endif %}</span>
+                </span>
+                <span class="flex items-center space-x-1">
+                    <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>
+                    <span>{% if language == 'bn' %}অ্যাটমিক ট্রানজেকশন লক{% else %}Atomic Row Locks{% endif %}</span>
+                </span>
+                <span class="flex items-center space-x-1">
+                    <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>
+                    <span>{% if language == 'bn' %}অ্যাকাউন্ট ছাড়াই অর্ডার{% else %}No Sign-in Required{% endif %}</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Filter Bar -->
+    <div class="max-w-7xl mx-auto px-6 flex items-center justify-between gap-4 overflow-x-auto py-2">
+        <div class="flex items-center space-x-2">
+            <span class="text-xs font-mono font-bold text-gray-400 uppercase tracking-wider">
+                {% if language == 'bn' %}ক্যাটাগরি:{% else %}Category:{% endif %}
+            </span>
+            
+            <a href="{% url 'catalog' %}?category=All{% if language %}&lang={{ language }}{% endif %}"
+               class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all {% if selected_category == 'All' %}bg-black text-white shadow-xs{% else %}bg-gray-100 text-gray-600 hover:bg-gray-200{% endif %}">
+               {% if language == 'bn' %}সকল পণ্য{% else %}All Products{% endif %}
+            </a>
+
+            {% for cat in categories %}
+                <a href="{% url 'catalog' %}?category={{ cat }}{% if language %}&lang={{ language }}{% endif %}"
+                   class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all {% if selected_category == cat %}bg-black text-white shadow-xs{% else %}bg-gray-100 text-gray-600 hover:bg-gray-200{% endif %}">
+                   {{ cat }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for product in products %}
+                <div class="card-perspective w-full">
+                    <div class="product-card-3d group bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col justify-between h-full">
+                        
+                        <!-- Product Image Panel -->
+                        <div class="relative aspect-square overflow-hidden bg-gray-50 translate-z-20">
+                            <img src="{{ product.image }}" alt="{{ product.name }}"
+                                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+
+                            <!-- Category Tag -->
+                            <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-full text-[11px] font-mono font-bold uppercase text-gray-700 tracking-wider shadow-xs">
+                                {{ product.category }}
+                            </div>
+
+                            <!-- Scarcity & Stock Badges -->
+                            {% if product.is_out_of_stock %}
+                                <div class="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center">
+                                    <span class="bg-red-600 text-white text-xs font-mono font-bold uppercase px-3 py-1.5 rounded-lg tracking-wider">
+                                        {% if language == 'bn' %}স্টক শেষ{% else %}SOLD OUT{% endif %}
+                                    </span>
+                                </div>
+                            {% elif product.is_low_stock %}
+                                <div class="absolute top-3 right-3 bg-amber-500 text-white px-2.5 py-1 rounded-full text-[10px] font-mono font-extrabold uppercase tracking-widest flex items-center space-x-1 animate-pulse">
+                                    <i data-lucide="flame" class="w-3.5 h-3.5"></i>
+                                    <span>
+                                        {% if language == 'bn' %}মাত্র {{ product.stock }}টি বাকি!{% else %}ONLY {{ product.stock }} LEFT{% endif %}
+                                    </span>
+                                </div>
+                            {% else %}
+                                <div class="absolute top-3 right-3 bg-emerald-500/90 backdrop-blur-xs text-white px-2.5 py-1 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase">
+                                    {% if language == 'bn' %}{{ product.stock }}টি স্টকে আছে{% else %}{{ product.stock }} in stock{% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Product Details -->
+                        <div class="p-5 flex flex-col flex-1 justify-between translate-z-10">
+                            <div>
+                                <h3 class="font-sans font-semibold text-gray-900 group-hover:text-amber-700 transition-colors">
+                                    {{ product.name }}
+                                </h3>
+                                <p class="text-gray-500 text-xs mt-1.5 line-clamp-2 h-8 leading-relaxed">
+                                    {{ product.description }}
+                                </p>
+                            </div>
+
+                            <div class="mt-4 pt-4 border-t border-gray-50 flex items-center justify-between">
+                                <div>
+                                    <span class="text-[10px] text-gray-400 font-mono uppercase block tracking-wider leading-none">
+                                        {% if language == 'bn' %}মূল্য{% else %}Price{% endif %}
+                                    </span>
+                                    <span class="text-base font-extrabold text-gray-900 font-sans">৳{{ product.price }}</span>
+                                </div>
+
+                                <button onclick="addToCart({{ product.id }}, '{{ product.name|escapejs }}', {{ product.price }}, '{{ product.image|escapejs }}', {{ product.stock }})"
+                                        {% if product.is_out_of_stock %}disabled{% endif %}
+                                        class="flex items-center space-x-1 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer {% if product.is_out_of_stock %}bg-gray-100 text-gray-400 cursor-not-allowed{% else %}bg-black text-white hover:bg-amber-700 active:scale-95{% endif %}">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                    <span>{% if language == 'bn' %}কার্টে যোগ করুন{% else %}Add to Cart{% endif %}</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-span-full py-16 text-center bg-white rounded-3xl border border-gray-100">
+                    <p class="text-gray-500 font-medium">No products found in this category.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
