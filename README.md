@@ -1,8 +1,8 @@
 # AuraMarket - Django Production E-Commerce Setup Guide (cPanel & Local Ready)
 This directory contains the full, standalone Django implementation of **AuraMarket**, featuring a **Sleek Slate & Minimal Gold** design, Bengali/English support, session-based guest checkout, and hidden management controls.
 ---
-Go for visit:
-[AuraMarket]([https://auramarket.com](http://auramarket.nazrul.errorgoat.com/))
+# Go for visit:
+[AuraMarket](http://auramarket.nazrul.errorgoat.com/)
 ---
 
 ## 🚀 Local Development & Testing Instructions
